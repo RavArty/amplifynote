@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { API, graphqlOperation } from 'aws-amplify';
+import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
+import { createNote } from './graphql/mutations';
 
-function App() {
+const App = () => {
+  const [notes, setNotes] = useState([]);
+  const [note, setNote] = useState('');
+
+  const handleAddNote = (e) => {
+    e.preventDefault();
+    const input = { note };
+    API.graphql(graphqlOperation(createNote, { input }));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <AmplifySignOut />
+      <div className="flex flex-column items-center justify-center pa3 bg-washed-red">
+        <h1 className="code f2-1">Amplify Notetaker </h1>
+        <form onSubmit={handleAddNote} className="mb3">
+          <input
+            type="text"
+            className="pa2 f4"
+            placeholder="Write your note"
+            onChange={(e) => setNote(e.target.value)}
+          />
+          <button className="pa2 f4" type="submit">
+            Add Note
+          </button>
+        </form>
+        <div>
+          {notes.map((item) => (
+            <p>item</p>
+          ))}
+        </div>
+      </div>
     </div>
   );
-}
+};
 
-export default App;
+export default withAuthenticator(App);
